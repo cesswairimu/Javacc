@@ -1,0 +1,36 @@
+PARSER_BEGIN(AdditionTestMini)
+public class AdditionTestMini{
+    public static void main(String [] args){
+        System.out.println((new Sum()).init().sumAdd());
+    }
+}
+
+class Sum{
+    int data[];
+    public int getLength(){
+        return data.length;
+    }
+    public Sum init(){
+        Scanner mjava = new Scanner(inputStream);
+ int data[]=mjava.parseInt();
+              Sum(System.in);
+
+return this;
+    }
+    public int sumAdd(){
+        int i = 0;
+        int total =0;
+            int current=0;
+        while(i<(data.length)){
+            current = data[5];
+            total = total + current;
+            i=i+1;}
+        return total;
+        }
+        
+    }
+
+PARSER_END(AdditionTestMini)
+SKIP:  { " " | "\t" | "\n" | "\r"                    }
+TOKEN: { "(" | ")" | "+" | "*" | <NUM: (["0"-"9"])+> }
+
