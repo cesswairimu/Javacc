@@ -1,0 +1,52 @@
+PARSER_BEGIN(VerifySyntax)
+
+public class VerifySyntax {
+    public static void main(String[] args) {
+        VerifySyntax val = new VerifySyntax(System.in);
+          while (true) {
+            System.out.println("\n\n Weka kitu unataka kuverify syntax yake");
+            try {
+              Start();
+            } catch (Throwable e) {
+            // Catching Throwable is ugly but JavaCC throws Error objects!
+            System.out.println("Hii itakuwa tricky kiasi mkubwa: " + e.getMessage());
+            }
+            break;
+        }
+              
+       
+    }
+}
+
+PARSER_END(VerifySyntax)
+
+SKIP:  { " " | "\t" | "\n" | "\r"  }
+
+TOKEN: { "(" | ")" | "{" | "}" | "=" | ";" | "[" | "]" | "." | "!" | "&&" | "||" | "<" | ">" | "==" | "+" | "*" | "-" | "/" | "%" | ","    | <NUM: (["0"-"9"])+ >|<identifier: (["a"-"z"])+ >}
+
+TOKEN: { "class" | "public" | "void"| "main"| "extends"| "assert" | "else" | "if" | "while" | "System.out.println" | "return" | "length" | "new"  | "this"  | "true"  | "false" | "int"  | "boolean" }
+
+void Program(): {} { MainClass() ClassDeclaration() <EOF>}
+void MainClass(): {} { class <identifier> "{" public static void main "(" ")" "{" <Statement>* "}" "}"}
+void Statement(): {} { assert "(" <expr> ")" | <local variable declaration> | "{" <Statement>* "}"|
+if  "(" <expr> ")" <Statement> |if  "(" <expr> ")" <Statement> else <Statement>  |
+while  "(" <expr> ")" <Statement>  |System.out.println "(" <expr> ")" ";"  |<lvalue> "=" <expr> ";"  |return <expr> ";"  | <method invocation> ";" } 
+void expr(): {} { <expr> <binary operator> <expr>  | <expr> "[" <expr> "]"  | <expr> "." length  | new <simple type> "[" <expr> "]"  |
+new <type identifier> "(" ")"  | "!" <expr>  | "(" <expr> ")"  | <identifier>  | <integer literal>  | this  | true  | false  |
+<method invocation> }
+void local variable declaration():{}{ <variable declaration>   }
+void lvalue(): {} { <expr>}
+void method invocation(): {} { <expr> "." <identifier> "(" [ <expr> ("," <expr>)* ] ")" }
+void binary operator(): {} { "&&" |  "||" | "<" | ">" |  "==" | "+" |  "-" | "*" | "/" | "%" }
+void simple type(): {} { int | boolean | void | <type identifier> }
+void type identifier(): {} { <identifier> }
+void integer literal(): {} { <NUM> }
+void variable declaration(): {} { <type> <identifier> ";"}
+void type(): {} { <simple type> | <array type> }
+void array type(): {} {  <simple type> "[" "]" }
+
+
+void ClassDeclaration(): {} { class <identifier> [extends <identifier>]"{" <declaration>* "}" }
+void declaration(): {} { <variable declaration> | <method declaration>  }
+void method declaration(): {} { public <type> <identifier> "(" [ <formals> ] ")" "{" <statement>* "}" }
+void formals(): {} {  <type> <identifier> ( "," <type> <identifier> )* }
