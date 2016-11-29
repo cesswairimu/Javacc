@@ -1,0 +1,82 @@
+PARSER_BEGIN(VerifySyntax)
+
+    public class VerifySyntax {
+        public static void main(String[] args) {
+                VerifySyntax val = new VerifySyntax(System.in);
+                while (true) {
+                            System.out.println("\n\n Weka kitu unataka kuverify syntax yake");
+                            try {
+                                          Start();
+                                                      
+                            } catch (Throwable e) {
+                                        // Catching Throwable is ugly but JavaCC throws Error objects!
+                                                    System.out.println("Hii itakuwa tricky kiasi mkubwa: " + e.getMessage());
+                                                                
+                            }
+                                        break;
+                                                
+                }
+                              
+                                     
+                                         
+        }
+
+    }
+
+    PARSER_END(VerifySyntax)
+
+    SKIP:  { " " | "\t" | "\n" | "\r"   }
+
+    TOKEN: { <OBR: "("> |
+    <CBR: ")"> | 
+    <OCB: "{"> | 
+    <CCB: "}"> | 
+    <EQUALS: "="> | 
+    <SEMICOLON: ";"> | 
+    <OSB: "["> | 
+    <CSB: "]"> | 
+    <DOT: "."> |
+    <EX: "!"> | 
+    <AD: "&&"> | 
+    <PIPE: "||"> | 
+    <LESSTHAN: "<"> | 
+    <GREATERTHAN: ">"> | 
+    <DEQUALS: "=="> | 
+    <PLUS: "+" > | 
+    <STAR: "*" > |
+    <MINUS : "-"> | 
+    <SLASH: "/" >| 
+    <PERCENT: "%"> |
+    <COMMA: ","> }
+
+    TOKEN:{<identifier: (<LETTERS>)+>}
+    TOKEN:{<NUM: (<DIGITS>)+ > }
+    TOKEN:{<#LETTERS: ["a"-"z"] > }
+    TOKEN:{<#DIGITS: ["0"-"9"] > }
+    TOKEN: { <CLASS:"class"> | <PUBLIC: "public"> | <VOID: "void">|<STATIC: "static"> |  <MAIN: "main">| <EXTENDS: "extends">| <ASSERT: "assert"> | <ELSE: "else"> | <IF: "if"> | <WHILE: "while"> | <SYSTEM: "System.out.println"> | <RETURN: "return"> |<LENGTH: "length"> | <NEW: "new">  | <THIS: "this">  | <TRUE: "true">  | <FALSE: "false"> | <INT: "int">  | <BOOLEAN: "boolean">  }
+
+    void Program(): {} { MainClass() ClassDeclaration() <EOF> }
+    void MainClass(): {} {<CLASS> <identifier> "<OCB>" <PUBLIC> <STATIC> <VOID> <MAIN> "<OBR>" "<CBR>" "<OCB>" Statement() "CCB>" "<CCB>" }
+    void Statement(): {} { <ASSERT> "<OBR>" expr() "<CBR>" | variabledeclaration() | "<OCB>" Statement() "<CCB>"|
+    
+    <IF>  "<OBR>" expr() "<CBR>" Statement() <ELSE> Statement()  | <IF> "<OBR>" expr() "<CBR>" Statement() |
+    <WHILE>  "<OBR>" expr() "<CBR>" Statement()  |<SYSTEM> "<OBR>" expr() "<CBR>" "<SEMICOLON>"  |lvalue() "<EQUALS>" expr() "<SEMICOLON>"  |<RETURN> expr() "<SEMICOLON>"  | methodinvocation() "<SEMICOLON>" } 
+    void expr(): {} { expr() binaryoperator() expr()  | expr() "<OSB>" expr() "<CSB>"  | expr() "<DOT>" <LENGTH>  | <NEW> simpletype() "<OSB>" expr() "<CSB>"  | <NEW> typeidentifier() "<OBR>" "<CBR>"  | "<EX>" expr()  | "<OBR>" expr() "<CBR>"  | <identifier>  | integerliteral()  | <THIS> | <TRUE> | <FALSE> |
+    methodinvocation() }
+    void localvariabledeclaration():{}{ variabledeclaration()    }
+    void lvalue(): {} { expr() }
+    void methodinvocation(): {} { expr() "<DOT>" <identifier> "<OBR>" [ expr() ("<COMMA>" expr())  ] "<CBR>"  }
+    void binaryoperator(): {} { "<AD>" |  "<PIPE>" | "<LESSTHAN>" | "<GREATERTHAN>" |  "<DEQALS>" | "<PLUS>" |  "<MINUS>" | "<STAR>" | "<SLASH>" | "<PERCENT>"  }
+    void simpletype(): {} {<INT> | <BOOLEAN> | <VOID> | typeidentifier() }
+    void typeidentifier(): {} { <identifier>  }
+    void integerliteral(): {} { <NUM>  }
+    void variabledeclaration(): {} { type() <identifier> "<SEMICOLON>" }
+    void type(): {} { simpletype() | arraytype()  }
+    void arraytype(): {} {  simpletype() "<OSB>" "<CSB>"  }
+
+
+    void ClassDeclaration(): {} { <CLASS> <identifier> [<EXTENDS> <identifier>]"<OCB>" declaration() "<CCB>"  }
+    void declaration(): {} { variabledeclaration() | methoddeclaration()   }
+    void methoddeclaration(): {} { <PUBLIC> type() <identifier> "<OBR>" [ formals()  ] "<CBR>" "<OCB>" Statement() "<CCB>"  }
+    void formals(): {} {  type() <identifier> ( "<COMMA>" type() <identifier>  )  }
+    
